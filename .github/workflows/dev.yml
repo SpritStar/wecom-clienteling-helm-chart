@@ -19,7 +19,7 @@ jobs:
 
     - name: Build and Push
       run: |
-        echo "${{ secrets.ALICLOUD_REGISTRY_PASSWORD }}" | helm registry login -u ${{ vars.ALICLOUD_REGISTRY_USERNAME }}@${{ vars.ALICLOUD_ACCOUNT_ID }} ${{ vars.ALICLOUD_REGISTRY }}
+        echo "${{ secrets.ALICLOUD_REGISTRY_PASSWORD }}" | helm registry login -u ${{ vars.ALICLOUD_REGISTRY_USERNAME }}@${{ vars.ALICLOUD_ACCOUNT_ID }} ${{ vars.ALICLOUD_REGISTRY }} --password-stdin
         tar -czvf ./charts/clienteling-backend.tgz ./charts/clienteling-backend
         helm push ./charts/clienteling-backend.tgz oci://${{ vars.ALICLOUD_REGISTRY }}/${{ vars.ALICLOUD_REGISTRY_DEV_NAMESPACE }}
 
