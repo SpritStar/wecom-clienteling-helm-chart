@@ -1,0 +1,31 @@
+name: "PRODUCTION"
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Specify tag to build'
+        required: true
+        type: string
+
+env:
+  HELM_EXPERIMENTAL_OCI: 1
+
+jobs:
+  build:
+    name: Build tag ${{ github.event.inputs.tag }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        ref: ${{ github.event.inputs.tag }}
+
+    - name: Build and Push
+      run: |
+        echo "${{ secrets.ALICLOUD_REGISTRY_PASSWORD }}" | helm registry login -u ${{ vars.ALICLOUD_REGISTRY_USERNAME }}@${{ vars.ALICLOUD_ACCOUNT_ID }} ${{ vars.ALICLOUD_REGISTRY }}
+        tar -czvf ./charts/clienteling-backend.tgz ./charts/clienteling-backend
+        helm push ./charts/clienteling-backend.tgz oci://${{ vars.ALICLOUD_REGISTRY }}/${{ vars.ALICLOUD_REGISTRY_PROD_NAMESPACE }}
+

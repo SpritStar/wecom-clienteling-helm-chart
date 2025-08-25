@@ -1,0 +1,22 @@
+name: "QA"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        ref: stagging
+
+    - name: Build and Push
+      run: |
+        echo "${{ secrets.ALICLOUD_REGISTRY_PASSWORD }}" | helm registry login -u ${{ vars.ALICLOUD_REGISTRY_USERNAME }}@${{ vars.ALICLOUD_ACCOUNT_ID }} ${{ vars.ALICLOUD_REGISTRY }}
+        tar -czvf ./charts/clienteling-backend.tgz ./charts/clienteling-backend
+        helm push ./charts/clienteling-backend.tgz oci://${{ vars.ALICLOUD_REGISTRY }}/${{ vars.ALICLOUD_REGISTRY_QA_NAMESPACE }}
+
