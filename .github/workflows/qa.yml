@@ -16,6 +16,8 @@ jobs:
 
     - name: Build and Push
       run: |
+        id
+        env
         echo "${{ secrets.ALICLOUD_REGISTRY_PASSWORD }}" | helm registry login -u ${{ vars.ALICLOUD_REGISTRY_USERNAME }}@${{ vars.ALICLOUD_ACCOUNT_ID }} ${{ vars.ALICLOUD_REGISTRY }}
         tar -czvf ./charts/clienteling-backend.tgz ./charts/clienteling-backend
         helm push ./charts/clienteling-backend.tgz oci://${{ vars.ALICLOUD_REGISTRY }}/${{ vars.ALICLOUD_REGISTRY_QA_NAMESPACE }}
