@@ -22,7 +22,11 @@ jobs:
         MONTH=$(TZ='Asia/Shanghai' date +'%m')
         DAY=$(TZ='Asia/Shanghai' date +'%d')
         TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-        RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\")).id" | wc -l)
+
+        WORKFLOW_ID=${{ github.workflow_id }}
+        RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs \
+            --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\") and .workflow_id == $WORKFLOW_ID).id" | wc -l)
+          
         echo "PROJECT_IMAGE_PREFIX=$YEAR$MONTH$DAY.$RUNS" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
