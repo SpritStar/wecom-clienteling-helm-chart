@@ -1,0 +1,32 @@
+name: "TEST"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        ref: dev
+
+    - name: Generate date variables
+      id: date_vars
+      run: |
+        CURRENT_DATE=$(TZ='Asia/Shanghai' date +'%Y%m%d.%H')
+        YEAR=$(TZ='Asia/Shanghai' date +'%Y')
+        MONTH=$(TZ='Asia/Shanghai' date +'%m')
+        DAY=$(TZ='Asia/Shanghai' date +'%d')
+        TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+        RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\")).id" | wc -l)
+        echo "PROJECT_IMAGE_PREFIX=$YEAR$MONTH$DAY.$RUNS" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Show variables
+      run: |
+        echo "PROJECT_IMAGE_PREFIX: ${{ steps.date_vars.outputs.PROJECT_IMAGE_PREFIX }}"
