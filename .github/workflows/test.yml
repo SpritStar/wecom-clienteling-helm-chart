@@ -27,7 +27,7 @@ jobs:
         WORKFLOW_ID=${{ github.workflow_id }}
         echo "workflow_id=$WORKFLOW_ID"
         RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs \
-            --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\") and .workflow_id == $WORKFLOW_ID).id" | wc -l)
+            --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\") and .head_sha == $GITHUB_WORKFLOW_SHA).id" | wc -l)
           
         echo "PROJECT_IMAGE_PREFIX=$YEAR$MONTH$DAY.$RUNS" >> $GITHUB_OUTPUT
       env:
