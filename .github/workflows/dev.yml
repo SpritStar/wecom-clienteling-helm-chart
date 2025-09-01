@@ -25,25 +25,20 @@ jobs:
         YEAR=$(TZ='Asia/Shanghai' date +'%Y')
         MONTH=$(TZ='Asia/Shanghai' date +'%m')
         DAY=$(TZ='Asia/Shanghai' date +'%d')
-        
         TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-        RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\")).id" | wc -l)
-        
-        echo "current_date=$CURRENT_DATE" >> $GITHUB_OUTPUT
-        echo "year=$YEAR 年" >> $GITHUB_OUTPUT
-        echo "month=$MONTH 月" >> $GITHUB_OUTPUT
-        echo "day=$DAY 日" >> $GITHUB_OUTPUT
-        echo "build_number=$RUNS" >> $GITHUB_OUTPUT
+
+        WORKFLOW_ID=${{ github.workflow_id }}
+        echo "workflow_id=$WORKFLOW_ID"
+        RUNS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs \
+            --jq ".workflow_runs[] | select((.created_at | startswith(\"${TODAY}\")) and (.display_title | startswith(\"${GITHUB_WORKFLOW}\"))).id" | wc -l)
+        NUMBER=$(printf "%02d" $RUNS)
+        echo "PROJECT_IMAGE_PREFIX=$YEAR$MONTH$DAY.$NUMBER" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Show variables
       run: |
-        echo "完整日期时间: ${{ steps.date_vars.outputs.current_date }}"
-        echo "年份: ${{ steps.date_vars.outputs.year }}"
-        echo "月份: ${{ steps.date_vars.outputs.month }}"
-        echo "日期: ${{ steps.date_vars.outputs.day }}"
-        echo "今日构建序号: ${{ steps.date_vars.outputs.build_number }}"
+        echo "PROJECT_IMAGE_PREFIX: ${{ steps.date_vars.outputs.PROJECT_IMAGE_PREFIX }}"
 
     - name: Build and Push
       run: |
