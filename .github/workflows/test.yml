@@ -37,5 +37,3 @@ jobs:
       run: |
         echo "PROJECT_IMAGE_PREFIX: ${{ steps.date_vars.outputs.PROJECT_IMAGE_PREFIX }}"
 
-
-
