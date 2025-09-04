@@ -49,3 +49,5 @@ jobs:
         # helm push ./charts/clienteling-backend.tgz oci://${{ vars.ALICLOUD_REGISTRY }}/${{ vars.ALICLOUD_REGISTRY_DEV_NAMESPACE }}
 
 
+
+
