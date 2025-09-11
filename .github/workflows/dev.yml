@@ -20,7 +20,7 @@ jobs:
     - name: Generate date variables
       id: date_vars
       run: |
-        env
+        cat charts/clienteling-backend/Chart.yaml
         CURRENT_DATE=$(TZ='Asia/Shanghai' date +'%Y%m%d.%H')
         YEAR=$(TZ='Asia/Shanghai' date +'%Y')
         MONTH=$(TZ='Asia/Shanghai' date +'%m')
